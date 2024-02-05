@@ -70,7 +70,7 @@ logger = logging.get_logger(__name__)
 _CONFIG_FOR_DOC = "LlamaConfig"
 
 #MY 
-# ALL_QUERY_DICT = dict()
+ALL_QUERY_DICT = dict()
 
 def _get_unpad_data(attention_mask):
     seqlens_in_batch = attention_mask.sum(dim=-1, dtype=torch.int32)
@@ -406,7 +406,7 @@ class LlamaAttention(nn.Module):
         query_states, key_states = apply_rotary_pos_emb(query_states, key_states, cos, sin, position_ids)
 
         #MY: Add query and key to dict
-        # ALL_QUERY_DICT[self.layer_idx] = {'query': query_states.detach(), 'key': key_states.detach()}
+        ALL_QUERY_DICT[self.layer_idx] = {'query': query_states.detach(), 'key': key_states.detach()}
 
         if past_key_value is not None:
             cache_kwargs = {"sin": sin, "cos": cos}  # Specific to RoPE models
@@ -1137,8 +1137,8 @@ class LlamaForCausalLM(LlamaPreTrainedModel):
         return self.model
     
     #MY
-    # def get_qk_dict(self):
-    #     return ALL_QUERY_DICT
+    def get_qk_dict(self):
+        return ALL_QUERY_DICT
 
     @add_start_docstrings_to_model_forward(LLAMA_INPUTS_DOCSTRING)
     @replace_return_docstrings(output_type=CausalLMOutputWithPast, config_class=_CONFIG_FOR_DOC)
